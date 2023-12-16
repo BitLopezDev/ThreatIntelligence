@@ -12,6 +12,42 @@ app.get("/gpt", async (req: Request, res: Response) => {
   //res.json(callGPT());
 });
 
+app.get("/vt", (req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, "../public", "virustotal.html"));
+});
+app.get("/api/virustotal/url", async (req, res) => {
+  const urlToScan = req.query.url;
+  let headersList = {
+    Accept: "*/*",
+    "User-Agent": "BitLopez Dev Threat Intelligence App",
+    "x-apikey": `${process.env.APIKEYVT!}`,
+  };
+
+  let response = await fetch(
+    `https://www.virustotal.com/api/v3/urls?url=${urlToScan}`,
+    {
+      method: "POST",
+      headers: headersList,
+    }
+  );
+
+  let data = await response.json();
+  const analysisId = data.data.id;
+
+  // Espera un poco antes de solicitar el resultado del análisis
+  await new Promise((resolve) => setTimeout(resolve, 15000));
+
+  let analysisResponse = await fetch(
+    `https://www.virustotal.com/api/v3/analyses/${analysisId}`,
+    {
+      headers: headersList,
+    }
+  );
+
+  let analysisData = await analysisResponse.json();
+  res.send(analysisData);
+});
+
 app.get("/", (req: Request, res: Response) => {
   // Send the HTML file
   res.sendFile(path.join(__dirname, "../public/index.html"));
