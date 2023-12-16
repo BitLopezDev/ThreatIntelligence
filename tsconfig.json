@@ -2,10 +2,11 @@
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
-    "outDir": "./public/scripts",  // Specify the output directory
-    "strict": true
+    "outDir": "./public/scripts",
+    "strict": true,
+    "esModuleInterop": true
   },
-  "include": ["src/scripts/**/*.ts"],  // Specify the TypeScript source files
+  "include": ["src/scripts/**/*.ts"],
   "exclude": ["node_modules"]
 }
 
