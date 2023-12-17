@@ -1,10 +1,18 @@
 import express, { Request, Response } from "express";
+import multer from "multer";
 import path from "path";
+import FormData from "form-data";
+import fetch from "node-fetch";
 import { SendFileOptions } from "express-serve-static-core";
-require("dotenv").config();
-const app = express();
+import fs from "fs";
+import dotenv from "dotenv";
 
+dotenv.config();
+
+const app = express();
 const port = 3000;
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 app.use(express.static(path.join(__dirname, "../public")));
 
@@ -31,7 +39,7 @@ app.get("/api/virustotal/url", async (req, res) => {
     }
   );
 
-  let data = await response.json();
+  let data: any = await response.json();
   const analysisId = data.data.id;
 
   // Espera un poco antes de solicitar el resultado del análisis
@@ -46,6 +54,38 @@ app.get("/api/virustotal/url", async (req, res) => {
 
   let analysisData = await analysisResponse.json();
   res.send(analysisData);
+});
+
+app.post("/api/virustotal/files", upload.array("files"), async (req, res) => {
+  /* try {
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ error: "No files uploaded" });
+    }
+
+    const apiKey = process.env.APIKEYVT;
+    if (!apiKey) {
+      return res.status(500).json({ error: "VirusTotal API key not provided" });
+    }
+
+    const formData = new FormData();
+    (req.files as Express.Multer.File[]).forEach((file) => {
+      formData.append("file", file.buffer, { filename: file.originalname });
+    });
+
+    const vtResponse = await fetch("https://www.virustotal.com/api/v3/files", {
+      method: "POST",
+      headers: {
+        "x-apikey": apiKey,
+      },
+      body: formData,
+    });
+
+    const vtData = await vtResponse.json();
+    res.json(vtData);
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }*/
 });
 
 app.get("/", (req: Request, res: Response) => {

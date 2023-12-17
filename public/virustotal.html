@@ -10,7 +10,17 @@
 <body>
     <input id="urlToScan" type="text" placeholder="Ingrese un link para analizar" value="https://www.google.com" />
     <button onclick="analyzeUrl()">Analizar</button>
-    <p id="responseP"></p>
+
+
+   
+
+    <form action="/api/virustotal/files" method="post" enctype="multipart/form-data">
+        <label for="fileInput">Selecciona archivos:</label>
+        <input type="file" id="fileInput" name="files[]" multiple>
+        <br>
+        <button type="submit">Subir Archivos</button>
+      </form>
+          <p id="responseP"></p>
     <script defer src="./scripts/main.js"></script>
 </body>
 
